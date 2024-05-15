@@ -7,6 +7,7 @@ authKey      = ""
 sets         = 15
 interval     = 150
 sourceName   = ""
+vertical     = False
 
 # ------------------------------------------------------------
 
@@ -16,6 +17,7 @@ def update_text():
 	global sets
 	global interval
 	global sourceName
+	global vertical
 
 	source = obs.obs_get_source_by_name(sourceName)
 	if source is not None:
@@ -54,6 +56,9 @@ def update_text():
 		}
 
 		text = ""
+		seperator = "  |  "
+		if vertical:
+			seperator = "\n"
 		setsToPlay = client.execute(futuresets, variable_values=params)
 		setsToPlay = setsToPlay['event']['sets']['nodes']
 		for i in range(len(setsToPlay)):
@@ -63,7 +68,7 @@ def update_text():
 				player1 = player1.split(' | ',1)[1]
 			if '|' in player2:
 				player2 = player2.split(' | ',1)[1]
-			gameString = player1 + " vs " + player2 + "  |  "
+			gameString = player1 + " vs " + player2 + seperator
 			text = text + gameString
 
 		settings = obs.obs_data_create()
@@ -87,12 +92,14 @@ def script_update(settings):
 	global interval
 	global sets
 	global sourceName
+	global vertical
 
 	eventId      = obs.obs_data_get_int(settings, "eventId")
 	authKey      = obs.obs_data_get_string(settings, "authKey")
 	interval     = obs.obs_data_get_int(settings, "interval")
 	sets         = obs.obs_data_get_int(settings, "sets")
 	sourceName   = obs.obs_data_get_string(settings, "source")
+	vertical     = obs.obs_data_get_bool(settings, "vertical")
 
 	obs.timer_remove(update_text)
 
@@ -107,9 +114,10 @@ def script_properties():
 	props = obs.obs_properties_create()
 
 	obs.obs_properties_add_int(props, "eventId", "start.gg Event ID", 100000, 9999999, 1)
-	obs.obs_properties_add_text(props, "authKey", "start.gg API Key", obs.OBS_TEXT_DEFAULT)
+	obs.obs_properties_add_text(props, "authKey", "start.gg API Key", obs.OBS_TEXT_PASSWORD)
 	obs.obs_properties_add_int(props, "sets", "Number of sets", 5, 40, 1)
 	obs.obs_properties_add_int(props, "interval", "Update Interval (seconds)", 5, 3600, 1)
+	obs.obs_properties_add_bool(props, "vertical", "Display sets vertically")
 
 	p = obs.obs_properties_add_list(props, "source", "Text Source", obs.OBS_COMBO_TYPE_EDITABLE, obs.OBS_COMBO_FORMAT_STRING)
 	sources = obs.obs_enum_sources()
