@@ -62,14 +62,22 @@ def update_text():
 		setsToPlay = client.execute(futuresets, variable_values=params)
 		setsToPlay = setsToPlay['event']['sets']['nodes']
 		for i in range(len(setsToPlay)):
-			player1 = setsToPlay[i]['slots'][0]['entrant']['name']
-			player2 = setsToPlay[i]['slots'][1]['entrant']['name']
+			if setsToPlay[i]['slots'][0]['entrant'] == None:
+				player1 = "TBD"
+			else:
+				player1 = setsToPlay[i]['slots'][0]['entrant']['name']
+			if setsToPlay[i]['slots'][1]['entrant'] == None:
+				player2 = "TBD"
+			else:
+				player2 = setsToPlay[i]['slots'][1]['entrant']['name']
 			if '|' in player1:
 				player1 = player1.split(' | ',1)[1]
 			if '|' in player2:
 				player2 = player2.split(' | ',1)[1]
 			gameString = player1 + " vs " + player2 + seperator
 			text = text + gameString
+		if text == "":
+			text = "No upcoming games!"
 
 		settings = obs.obs_data_create()
 		obs.obs_data_set_string(settings, "text", text)
