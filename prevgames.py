@@ -33,7 +33,7 @@ def update_text():
 						page: $page,
 						perPage: $setsPerPage,
 						filters: {
-							state: 1
+							state: 3
 						}
 					){
 						nodes {
@@ -61,9 +61,9 @@ def update_text():
 		seperator = "  |  "
 		if vertical:
 			seperator = "\n"
-		setsPlayed = client.execute(pastsets, variable_values=params)
-		setsPlayed = setsPlayed['event']['sets']['nodes']
-		for i in range(len(setsPlayed)):
+		nodes = client.execute(pastsets, variable_values=params)
+		nodes = nodes['event']['sets']['nodes']
+		for i in range(len(nodes)):
 			player1 = nodes[i]['slots'][0]['entrant']['name']
 			player1Id = nodes[i]['slots'][0]['entrant']['id']
 			player2 = nodes[i]['slots'][1]['entrant']['name']
